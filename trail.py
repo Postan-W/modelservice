@@ -45,5 +45,5 @@ t1_saved_model_path = "./model/LeNet/model/model/"
 
 model4 = SavedModelFromFlow(t1_saved_model_path)
 
-model4.predict(data5)
+model4.predict(data6)
 

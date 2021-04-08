@@ -9,12 +9,15 @@ from PIL import Image
 import logging
 import io
 #将图片转为numpy数组
+"""
+PIL读出来的图片size应该是(width,height)，但是转成numpy矩阵后，变成了(height, width, channels)。所以resize的时候应该注意调换位置。numpy与tensorflow一致
+"""
 def universal_image_process(image:bytes,shape:list,logger:logging.getLogger()=None)->np.array:
     print("tag:universal_image_process正在处理图片,将图片转为numpy数组")
     image = Image.open(io.BytesIO(image))
     try:
         len_shape = len(shape)
-        image_array = np.array(image)
+        image_array = np.array(image)#将PIL.JpegImagePlugin.JpegImageFile对象转为numpy数组
         # 如果输入张量是一维的，那么需要把图片拉平为一维的
         if len_shape == 1:
             #如果图片是3通道的RGB图片
@@ -31,7 +34,7 @@ def universal_image_process(image:bytes,shape:list,logger:logging.getLogger()=No
                 image2 = list(image2)
                 #把不够的部分补上
                 for i in range(shape[0]-product):
-                    image2.append(127)#取一个中间值补上
+                    image2.append(127)#取255的一半
                 image2 = np.array(image2,dtype="float32")
                 image2 /= 255.0
                 image2.shape = (1,) + image2.shape
@@ -68,9 +71,13 @@ def universal_image_process(image:bytes,shape:list,logger:logging.getLogger()=No
                 print("把3通道的转为3维张量")
                 #如果上传的图片是三通道，而shape是类似[32,32,1]这种形式的话，那么转化肯定会失败，只能提前把图片转为灰度的
                 if shape[2] == 1:
+                    print("转为灰度前的形状为:",np.array(image,dtype="float32").shape)
                     image6 = image.convert("L")
+                    # image6.save("singleChannel.png")
+                    image_test = np.array(image6,dtype="float32")
+                    print("转为灰度后的形状为:",image_test.shape)
                     print("如果这个shape的最后一维为1，那么需要把三通的图片先转为灰度图片")
-                    image6 = image.resize((shape[1],shape[0]))
+                    image6 = image6.resize((shape[1],shape[0]))
                     image6 = np.array(image6,dtype="float32")
                     image6 /= 255.0
                     image6.shape = (1,)+tuple(shape)
@@ -86,6 +93,7 @@ def universal_image_process(image:bytes,shape:list,logger:logging.getLogger()=No
                 print("把单通道的转为3维张量")
                 if shape[2] == 1:
                     print("三维张量shape的最后一维为1")
+                    print("灰度图片resize前的形状为", np.array(image, dtype="float32").shape)
                     image7 = image.resize((shape[1],shape[0]))
                     image7 = np.array(image7, dtype="float32")
                     image7 /= 255.0

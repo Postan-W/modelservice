@@ -2,7 +2,7 @@ from request_json import data,data2,data5,data3
 import base64
 import tensorflow as tf
 
-
+#注：
 def universal_image_process(image: bytes, shape: list):
  print("tag:universal_image_process正在处理图片,将图片转为numpy数组")
  image = Image.open(io.BytesIO(image))
