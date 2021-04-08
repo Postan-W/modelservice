@@ -73,10 +73,10 @@ def universal_image_process(image:bytes,shape:list,logger:logging.getLogger()=No
                 if shape[2] == 1:
                     print("转为灰度前的形状为:",np.array(image,dtype="float32").shape)
                     image6 = image.convert("L")
+                    print("如果这个shape的最后一维为1，那么需要把三通的图片先转为灰度图片")
                     # image6.save("singleChannel.png")
                     image_test = np.array(image6,dtype="float32")
                     print("转为灰度后的形状为:",image_test.shape)
-                    print("如果这个shape的最后一维为1，那么需要把三通的图片先转为灰度图片")
                     image6 = image6.resize((shape[1],shape[0]))
                     image6 = np.array(image6,dtype="float32")
                     image6 /= 255.0
@@ -99,7 +99,7 @@ def universal_image_process(image:bytes,shape:list,logger:logging.getLogger()=No
                     image7 /= 255.0
                     image7.shape = (1,) + tuple(shape)
                 elif shape[2] == 3:
-                    image7 = image.convert("RGB")
+                    image7 = image.convert("RGB")#如果shape[2]==3，因为image是单通道的，所以还要将其转为三通道的
                     image7 = image7.resize((shape[1], shape[0]))
                     image7 = np.array(image7, dtype="float32")
                     image7 /= 255.0

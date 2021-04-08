@@ -237,8 +237,9 @@ class SavedModelFromFlow(PublicModelInterface):
             print("处理的是b64图片")
             logger.info("处理的是b64图片")
             img_b64 = data["b64"]
-            img_b64 = base64.b64decode(img_b64)
+            img_b64 = base64.b64decode(img_b64)#得到bytes形式的图片
             img_b64 = universal_image_process(img_b64,shape,logger)
+            np.set_printoptions(suppress=True)  # savedmodel返回的是科学计数法形式，取消科学计数法
             result = SavedModelFromFlow.sess.run(output_tensor,feed_dict={input_tensor:img_b64})
             print("预测结果是:",result)
             return result
