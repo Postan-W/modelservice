@@ -1,0 +1,1 @@
+{"dataSetId":"pr","fieldDefs":[{"typeClassName":"java.math.BigDecimal","ord":"0","code":"recall","sparkType":"double","displayName":"recall","name":"recall"},{"typeClassName":"java.math.BigDecimal","ord":"1","code":"precision","sparkType":"double","displayName":"precision","name":"precision"}],"previewFlag":"false"}

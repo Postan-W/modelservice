@@ -1,0 +1,2 @@
+FROM 1135085247/modelservice:v3
+COPY model_server /root/model_server/
