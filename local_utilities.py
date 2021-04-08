@@ -37,14 +37,14 @@ def universal_image_process(image:bytes,shape:list,logger:logging.getLogger()=No
                 image2.shape = (1,) + image2.shape
                 return image2
             elif len(image_array.shape) == 2:
-                print("1通道处理成一维张量")
+                print("把灰度图片处理成一维张量")
                 image3 = image.resize((shape[0],1))
                 image3 = np.array(image3,dtype="float32")
                 image3 /= 255.0
                 return image3
         elif len_shape == 2:
             if len(image_array.shape) == 3:
-                print("把3通道的处理成二维张量")
+                print("把3通道图片处理成二维张量")
                 image4 = image.resize((int(shape[0]*shape[1]/3),1))
                 image4 = np.array(image4)
                 image4.shape = (int(shape[0]*shape[1]/3)*3,)
@@ -56,7 +56,7 @@ def universal_image_process(image:bytes,shape:list,logger:logging.getLogger()=No
                 image4 /= 255.0
                 return image4
             elif len(image_array.shape) == 2:
-                print("把单通道的处理成二维张量")
+                print("把灰度图片处理成二维张量")
                 image5 = image.resize((shape[1],shape[0]))
                 image5 = np.array(image5,dtype="float32")
                 print("图片形状为:",image5.shape)
@@ -69,13 +69,14 @@ def universal_image_process(image:bytes,shape:list,logger:logging.getLogger()=No
                 #如果上传的图片是三通道，而shape是类似[32,32,1]这种形式的话，那么转化肯定会失败，只能提前把图片转为灰度的
                 if shape[2] == 1:
                     image6 = image.convert("L")
-                    print("将三通道的图片转为灰度图片后进行处理")
+                    print("如果这个shape的最后一维为1，那么需要把三通的图片先转为灰度图片")
                     image6 = image.resize((shape[1],shape[0]))
                     image6 = np.array(image6,dtype="float32")
                     image6 /= 255.0
                     image6.shape = (1,)+tuple(shape)
                     return image6
                 elif shape[2] == 3:
+                    print("如果shape的第三维度值本身就是3，那么直接将三通到的图片resize成shape要求的形状即可")
                     image6 = image.resize((shape[1], shape[0]))
                     image6 = np.array(image6, dtype="float32")
                     image6 /= 255.0
@@ -84,7 +85,7 @@ def universal_image_process(image:bytes,shape:list,logger:logging.getLogger()=No
             if len(image_array.shape) == 2:
                 print("把单通道的转为3维张量")
                 if shape[2] == 1:
-                    print("输入张量把单通道也在最后一个维度上体现了")
+                    print("三维张量shape的最后一维为1")
                     image7 = image.resize((shape[1],shape[0]))
                     image7 = np.array(image7, dtype="float32")
                     image7 /= 255.0
