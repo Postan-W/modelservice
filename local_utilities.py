@@ -64,13 +64,23 @@ def universal_image_process(image:bytes,shape:list,logger:logging.getLogger()=No
                 image5.shape = (1,)+tuple(shape)
                 return image5
         elif len_shape == 3:
-            if len(image_array.shape) == 3:#这里默认既然图片是三通道的，那shape[2]理应是3，否则会出错
+            if len(image_array.shape) == 3:
                 print("把3通道的转为3维张量")
-                image6 = image.resize((shape[1],shape[0]))
-                image6 = np.array(image6,dtype="float32")
-                image6 /= 255.0
-                image6.shape = (1,)+tuple(shape)
-                return image6
+                #如果上传的图片是三通道，而shape是类似[32,32,1]这种形式的话，那么转化肯定会失败，只能提前把图片转为灰度的
+                if shape[2] == 1:
+                    image6 = image.convert("L")
+                    print("将三通道的图片转为灰度图片后进行处理")
+                    image6 = image.resize((shape[1],shape[0]))
+                    image6 = np.array(image6,dtype="float32")
+                    image6 /= 255.0
+                    image6.shape = (1,)+tuple(shape)
+                    return image6
+                elif shape[2] == 3:
+                    image6 = image.resize((shape[1], shape[0]))
+                    image6 = np.array(image6, dtype="float32")
+                    image6 /= 255.0
+                    image6.shape = (1,) + tuple(shape)
+                    return image6
             if len(image_array.shape) == 2:
                 print("把单通道的转为3维张量")
                 if shape[2] == 1:
@@ -79,7 +89,7 @@ def universal_image_process(image:bytes,shape:list,logger:logging.getLogger()=No
                     image7 = np.array(image7, dtype="float32")
                     image7 /= 255.0
                     image7.shape = (1,) + tuple(shape)
-                else:
+                elif shape[2] == 3:
                     image7 = image.convert("RGB")
                     image7 = image7.resize((shape[1], shape[0]))
                     image7 = np.array(image7, dtype="float32")

@@ -93,7 +93,7 @@ else:
 @app.route('/' + api_addr, methods=['POST'])
 def route_predict():
     try:
-        data = json.loads(request.data)#POST的参数请用data接收。GET的请求参数请用args接收。
+        data = json.loads(request.data)#POST的参数请用data接收得到Python字典格式数据。GET的请求参数请用args接收。
         # token = data["token"]
         # app.logger.info(token)
         # token_result = check_token(token, "")

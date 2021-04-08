@@ -1,5 +1,5 @@
 from models import H5Model,SMModelTf2,SavedModelFromFlow
-from request_json import data,data2,data3,data5
+from request_json import data,data2,data3,data5,data6
 
 # model = H5Model("./model/miniVGGNet/model/model/model_miniVGGNet.h5")
 #
