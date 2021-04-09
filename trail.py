@@ -1,4 +1,4 @@
-from models import H5Model,SMModelTf2,SavedModelFromFlow
+from models import H5Model,SMModelTf2,SavedModelTf1
 from request_json import data,data2,data3,data5,data6
 
 # model = H5Model("./model/miniVGGNet/model/model/model_miniVGGNet.h5")
@@ -43,7 +43,7 @@ t1_saved_model_path = "./model/LeNet/model/model/"
 #     print(input_shape)
 #     print(input_tensor_name)
 
-model4 = SavedModelFromFlow(t1_saved_model_path)
+model4 = SavedModelTf1(t1_saved_model_path)
 
 model4.predict(data6)
 

@@ -9,7 +9,7 @@ import json
 import traceback
 import numpy as np
 import re
-from models import SMModelTf2, OnnxModel, H5Model, PMMLModel,CkptModel,PbModel,PthModel
+from models import SMModelTf2, OnnxModel, H5Model, PMMLModel,CkptModel,PbModel,PthModel,SavedModelTf1
 
 app = Flask(__name__)
 #---------------日志部分----------------------------------------
@@ -82,8 +82,15 @@ elif model_type == ".pth" or model_type == ".pt":
 elif model_name[0] == "model":
     print("开始生成savemodel模型")
     saved_model_path = "/models/model/model"
-    model = SMModelTf2(saved_model_path, model_inputs)
-    print("模型加载完毕,savedmodel模型")
+    try:
+        model = SMModelTf2(saved_model_path, model_inputs)
+        #如果是tf2或者keras保存的SavedModel模型，那么加载后，可以直接调用to_json函数
+        model.model.to_json()
+        print("tf2版本的SavedModel模型加载完毕")
+    except:
+        print("上面调用to_json()函数失败，说明该模型是tf1格式的")
+        model = SavedModelTf1(saved_model_path,model_inputs)
+        print("tf1版本的SavedModel模型加载完毕")
 else:
     app.logger.error('不支持当前模型格式:' + model_type)
     sys.exit(1)
@@ -121,4 +128,4 @@ def sucessfully():
     return "sucessfully!"
 
 if __name__ == '__main__':
-    app.run(host="0.0.0.0", port=5422, debug=False)
+    app.run(host="0.0.0.0", port=5000, debug=False)
