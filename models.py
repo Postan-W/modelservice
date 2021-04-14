@@ -1,3 +1,7 @@
+"""
+@Author : wmingzhu
+@Annotation : Tensorflow2.0，cpu版本。采用这个版本是因为：1.推理计算量小不需要GPU 2.GPU版本的Tensor flow跟镜像所在宿主机的GPU驱动版本以及CUDA版本等有关联，镜像移植能力差 3.tf.compat.v1可以处理v1版本的Tensor flow的模型加载与预测的事务，这样相当于将两个类型集成到一个镜像中，比分开是部署简单
+"""
 import abc
 import base64
 import io
@@ -31,15 +35,12 @@ logger.addHandler(handler)
 console = logging.StreamHandler()
 console.setLevel(logging.INFO)
 logger.addHandler(console)
-"""
-抽象的模型类，需要实现为以下几个模型格式：savedmodel、onnx、pmml、h5、ckpt、pb、pth
-"""
 
 headers = {
     "user-agent": "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36"
 }
 
-
+#抽象基类，限定了模型类要实现预测和返回模型信息这两个方法
 class PublicModelInterface(abc.ABC):
 
     @abc.abstractmethod
@@ -49,23 +50,6 @@ class PublicModelInterface(abc.ABC):
     @abc.abstractmethod
     def get_info(self):
         pass
-
-
-class PMMLModel(PublicModelInterface):
-
-    def __init__(self, modelpath,model_inputs=None):
-        self.model = Model.fromfile(modelpath)
-        self.info = ".pmml"
-
-    def __del__(self):
-        if self.model:
-            self.model.close()
-
-    def get_info(self):
-        return self.info
-
-    def predict(self, data):
-        return self.model.predict(data)
 
 
 class H5Model(PublicModelInterface):
@@ -109,7 +93,7 @@ class H5Model(PublicModelInterface):
             return result
         if data["type"] == "url":
             try:
-                image = requests.get(data["url"]).content
+                image = requests.get(data["url"]).content#直接得到bytes图片
                 print("获取网络图片成功")
             except Exception as e:
                 logger.info(e)
@@ -203,7 +187,7 @@ class SMModelTf2(PublicModelInterface):
             print("处理的结果是:", result)
             return result
 
-#下面定义图灵引擎平台流上产生savedModel(tf1形式)模型的加载类
+#tensorflow静态图生成的SavedModel模型需要知道signature签名的关键键值来获取所需张量
 class SavedModelTf1(PublicModelInterface):
     #将Session对象定义为类变量
     sess = tf.compat.v1.Session()
@@ -211,16 +195,28 @@ class SavedModelTf1(PublicModelInterface):
     def __init__(self,model_path,model_inputs=None):
         self.model = tf.compat.v1.saved_model.loader.load(SavedModelTf1.sess, [tf.compat.v1.saved_model.tag_constants.SERVING], model_path)
         self.shape = model_inputs
-        print("这是来自图灵引擎平台流上的模型")
-        print("流上的签名是写死的，所以这里就按照固定方式解析")
+        print("这是tf1版本的SavedModel模型，需要知道签名信息来还原图")
 
     def predict(self, data=None):
-        signature_def = self.model.signature_def
-        signature_def = signature_def["test_signature"]
-        input_tensor_name = signature_def.inputs['input_x'].name
-        output_tensor_name = signature_def.outputs['outputs'].name
-        input_tensor = tf.compat.v1.get_default_graph().get_tensor_by_name(input_tensor_name)
-        output_tensor = tf.compat.v1.get_default_graph().get_tensor_by_name(output_tensor_name)
+        """
+        在我写这部分处理代码的时候前端还没有加上图的输入输出张量的填写框，这样的话，就没办法还原图来进行预测。
+        但是这里先加上这部分的处理逻辑，其中try的部分写的是通过前端传来的输入输出张量名称来获取张量并进行预测。
+        except部分写的是如果没有获得这个信息，那么就按照图灵引擎平台流上产生的模型所具有的固定signature来解析。
+        By wmingzhu
+        """
+        try:
+            input_tensor = tf.compat.v1.get_default_graph().get_tensor_by_name(data["input_tensor_name"])
+            output_tensor = tf.compat.v1.get_default_graph().get_tensor_by_name(data["output_tensor_name"])
+            print("传来的张量名称正确，已成功生成输入输出张量")
+        except:
+            print("没有获得输入输出张量信息，只能按照固定格式解析")
+            signature_def = self.model.signature_def
+            signature_def = signature_def["test_signature"]
+            input_tensor_name = signature_def.inputs['input_x'].name
+            output_tensor_name = signature_def.outputs['outputs'].name
+            print(input_tensor_name,output_tensor_name)
+            input_tensor = tf.compat.v1.get_default_graph().get_tensor_by_name(input_tensor_name)
+            output_tensor = tf.compat.v1.get_default_graph().get_tensor_by_name(output_tensor_name)
         # 获取输入张量的形状
         input_shape = tuple(input_tensor.shape)
         #因为shape总是类似（None,32,32,1)这种形式，需要转为类似[32,32,1]这种形式
@@ -304,7 +300,11 @@ class OnnxModel(PublicModelInterface):
 
 
 
-#运行pb和ckpt模型需要额外的参数，主要包括tensor或op的name，以及feedict的key值
+"""
+ckpt文件相比于SavedModel和pb文件来讲还多出一个问题，那就是模型目录下可能包含数个阶段的模型记录，
+比如是以epoch为单位记录的，所以这里就涉及到加载哪个阶段的模型记录的问题。
+这里默认加载最新的，也就是数字后缀最大的那个。
+"""
 class CkptModel(PublicModelInterface):
     def __init__(self,model_path,model_inputs=None):
         pass

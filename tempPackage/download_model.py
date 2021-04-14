@@ -34,18 +34,28 @@ def special_uncompress(file, fmt=SNAPPY_COMPRESS_SUFFIX):
 
 def uncompress(zip_path, unzip_path):
     with ZipFile(zip_path, 'r')as f:
-        # 需要的目录：/model/{model,columns}
-        zips = list(filter(lambda x: (
-                x.startswith(MODULE_DIR_PREFIX) or x.startswith(COLUMNS_DIR_PREFIX)
-        ), f.namelist()))
-        logging.info(f"The zip of list will be extracted! => {zips}")
-        f.extractall(unzip_path, members=zips)
-        # 解压后的路径，筛选出以.snappy结尾的压缩文件，然后再次单独解压
-        compress_files = list(filter(lambda x: x.endswith(SNAPPY_COMPRESS_SUFFIX), zips))
-        if compress_files:
-            # 拼接需要特殊解压的文件全路径
-            compress_files = list(map(lambda x: os.path.join(unzip_path, x), compress_files))
-            [special_uncompress(cp_file) for cp_file in compress_files]
+        #判断是否是pmml模型。压缩包结构是model/xxx.pmml
+        tag = False
+        for child in f.namelist():
+            if child.endswith(".pmml"):
+                tag = True
+                print("是pmml模型")
+                break
+        if tag == True:
+            f.extractall(unzip_path)
+        else:
+            # 需要的目录：/model/{model,columns}
+            zips = list(filter(lambda x: (
+                    x.startswith(MODULE_DIR_PREFIX) or x.startswith(COLUMNS_DIR_PREFIX)
+            ), f.namelist()))
+            logging.info(f"The zip of list will be extracted! => {zips}")
+            f.extractall(unzip_path, members=zips)
+            # 解压后的路径，筛选出以.snappy结尾的压缩文件，然后再次单独解压
+            compress_files = list(filter(lambda x: x.endswith(SNAPPY_COMPRESS_SUFFIX), zips))
+            if compress_files:
+                # 拼接需要特殊解压的文件全路径
+                compress_files = list(map(lambda x: os.path.join(unzip_path, x), compress_files))
+                [special_uncompress(cp_file) for cp_file in compress_files]
 
 
 def save_model(local_path, content):

@@ -9,7 +9,7 @@ import json
 import traceback
 import numpy as np
 import re
-from models import SMModelTf2, OnnxModel, H5Model, PMMLModel,CkptModel,PbModel,PthModel,SavedModelTf1
+from models import SMModelTf2, OnnxModel, H5Model, CkptModel,PbModel,PthModel,SavedModelTf1
 
 app = Flask(__name__)
 #---------------日志部分----------------------------------------
@@ -67,9 +67,6 @@ if model_type == ".onnx":
     app.logger.info("模型加载完毕->" + model_type[1:] + "模型")
 elif model_type == ".h5":
     model = H5Model(model_path,model_inputs)
-    app.logger.info("模型加载完毕->"+model_type[1:]+"模型")
-elif model_type == ".pmml":
-    model = PMMLModel(model_path,model_inputs)
     app.logger.info("模型加载完毕->"+model_type[1:]+"模型")
 elif model_type == ".ckpt":
     model = CkptModel(model_path,model_inputs)
