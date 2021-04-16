@@ -7,8 +7,6 @@ SHELL ["/bin/bash","-c"]
 LABEL "date"="2020-12"
 #LABEL "register"="root" \"password"="l8X6%WAqc9ifGX6o" \"link"="140.210.92.100"
 
-#--build-arg <varname>=<value>
-ARG builder=wmingzhu
 
 #ONBUILD RUN ls -al
 

@@ -1,9 +1,10 @@
-lis1 = [{'节点': 'mn1', '更新时间': '2021/2/26  11:10:02'}]
-print(str(lis1))
+import logging
+logger = logging.getLogger(__name__)
+logger.setLevel(level=logging.INFO)
+formatter = logging.Formatter(
+        '%(asctime)s--文件名:%(filename)s--文件路径:%(pathname)s--函数名:%(funcName)s--行号:%(lineno)s--进程id:%(process)s--日志级别:%(levelname)s--日志内容:%(message)s')
+console = logging.StreamHandler()
+logger.addHandler(console)
 
-from zipfile import ZipFile
-
-with ZipFile("modelsm.zip",'r') as f:
-    print(list(filter(lambda x: x.startswith('model/model'), f.namelist())))
-    zips = list(filter(lambda x: x.startswith('model/model'), f.namelist()))
-    f.extractall("./models",zips)
+logging.info("logging测试")
+logger.info("logger测试")

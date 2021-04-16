@@ -39,11 +39,11 @@ if not (xquery_addr and model_service_id and api_addr):
 
 
 
-model_inputs = os.environ.get('MODEL_INPUTS')
-#上面的model_inputs是一个环境变量的值，也就是字符串，我们需要列表形式的或者numpy数组形式的模型输入
-pattern = re.compile("\d+?(?=,|\])")
-model_inputs = pattern.findall(model_inputs)
-model_inputs = [int(element) for element in model_inputs]
+# model_inputs = os.environ.get('MODEL_INPUTS')
+# #上面的model_inputs是一个环境变量的值，也就是字符串，我们需要列表形式的或者numpy数组形式的模型输入
+# pattern = re.compile("\d+?(?=,|\])")
+# model_inputs = pattern.findall(model_inputs)
+# model_inputs = [int(element) for element in model_inputs]
 
 
 # 验证token
@@ -67,31 +67,41 @@ model_type = os.path.splitext(entire_path)[1]
 
 
 if model_type == ".onnx":
-    model = OnnxModel(model_path, model_inputs)
+    model = OnnxModel(model_path)
     app.logger.info("模型加载完毕->" + model_type[1:] + "模型")
 elif model_type == ".h5":
-    model = H5Model(model_path,model_inputs)
+    model = H5Model(model_path)
     app.logger.info("模型加载完毕->"+model_type[1:]+"模型")
 elif model_type == ".ckpt":
-    model = CkptModel(model_path,model_inputs)
+    model = CkptModel(model_path)
 elif model_type == ".pb":
-    model = PbModel(model_path,model_inputs)
+    model = PbModel(model_path)
     app.logger.info("模型加载完毕->" + model_type[1:] + "模型")
 elif model_type == ".pth" or model_type == ".pt":
-    model = PthModel(model_path,model_inputs)
+    model = PthModel(model_path)
     app.logger.info("模型加载完毕->" + model_type[1:] + "模型")
 elif model_name[0] == "model":
-    print("开始生成savemodel模型")
-    saved_model_path = "/models/model/model"
-    try:
-        model = SMModelTf2(saved_model_path, model_inputs)
-        #如果是tf2或者keras保存的SavedModel模型，那么加载后，可以直接调用to_json函数
-        model.model.to_json()
-        print("tf2版本的SavedModel模型加载完毕")
-    except:
-        print("上面调用to_json()函数失败，说明该模型是tf1格式的")
-        model = SavedModelTf1(saved_model_path,model_inputs)
-        print("tf1版本的SavedModel模型加载完毕")
+    #"/models/model/model"下面可能是ckpt文件也可能是SavedModel文件
+    file_list = os.listdir("/models/model/model")
+    is_SavedModel_tag = False
+    for file in file_list:
+        if file.endswith(".pb"):
+            is_SavedModel_tag = True
+            break
+    if is_SavedModel_tag:
+        try:
+            model = SMModelTf2("/models/model/model")
+            #如果是tf2或者keras保存的SavedModel模型，那么加载后，可以直接调用to_json函数
+            model.model.to_json()
+            app.logger.info("tf2版本的SavedModel模型加载完毕")
+        except:
+            print("上面调用to_json()函数失败，说明该模型是tf1格式的")
+            model = SavedModelTf1("/models/model/model")
+            app.logger.info("tf1版本的SavedModel模型加载完毕")
+    else:
+        app.logger.info("该模型为ckpt模型")
+        model = CkptModel("/models/model/model")
+        app.logger.info("ckpt模型加载完成")
 else:
     app.logger.error('不支持当前模型格式:' + model_type)
     sys.exit(1)
