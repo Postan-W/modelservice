@@ -36,10 +36,10 @@ def uncompress(zip_path, unzip_path):
     with ZipFile(zip_path, 'r')as f:
         #判断是否是pmml模型。压缩包结构是model/xxx.pmml
         tag = False
-        for child in f.namelist():
+        for child in f.namelist():#其实这个namelist就包含两个元素[model,model/xxx.pmml]
             if child.endswith(".pmml"):
                 tag = True
-                print("是pmml模型")
+                logging.info("是pmml模型")
                 break
         if tag == True:
             f.extractall(unzip_path)

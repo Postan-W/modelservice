@@ -1,3 +1,5 @@
+#@Author : wmingzhu
+#@Email : wangmingzhu@bonc.com.cn
 import logging
 import os
 import sys
@@ -34,6 +36,8 @@ api_addr = os.environ.get('API_ADDR')
 if not (xquery_addr and model_service_id and api_addr):
     app.logger.error('缺少环境变量')
     sys.exit(1)
+
+
 
 model_inputs = os.environ.get('MODEL_INPUTS')
 #上面的model_inputs是一个环境变量的值，也就是字符串，我们需要列表形式的或者numpy数组形式的模型输入

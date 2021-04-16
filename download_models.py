@@ -1,3 +1,5 @@
+#@Author : wmingzhu
+#@Email : wangmingzhu@bonc.com.cn
 import json
 import logging
 import os
@@ -21,7 +23,7 @@ logger.addHandler(console)
 
 COMPRESSED_MODEL_PREFIX = "model/model"
 
-
+#模型压缩文件都是model/model的结构，解压完成后都model/model下的内容都放在/models下
 def uncompress(origin_zip):
     with ZipFile(origin_zip, 'r') as f:
         # 找出以model/model打头的目录
@@ -37,13 +39,13 @@ def uncompress(origin_zip):
                         # 所以先移动模型文件，然后再删除此目录结构
                         entire_path = os.path.join("/models/", element)
                         shutil.move(entire_path, "/models/")
-                        shutil.rmtree("/models/model")
+                        shutil.rmtree("/models/model")#相当于把/models/model/model下的模型直接移到/models下，然后再把/models/model整个删掉
                         print("模型所在目录情况:",os.listdir("/models"))
                     except Exception as e:
                         logger.error(e)
         else:
             print("不是单个模型文件")
-            f.extractall("/models/",zips)
+            f.extractall("/models/",zips)#相当于把关于模型的所有文件都放到了
             print("模型所在目录情况:",os.listdir("/models"))
             print("/models/model/model的具体情况是:",os.listdir("/models/model/model"))
 

@@ -21,7 +21,7 @@ import operator
 from PIL import Image
 import logging
 import json
-from local_utilities import h5_resize_bs64,h5_input_shape,universal_image_process,savemodel_input_shape
+from local_utilities import h5_resize_bs64,h5_input_shape,universal_image_process,savemodel_input_shape,find_latest
 from logging.handlers import RotatingFileHandler
 
 logger = logging.getLogger(__name__)
@@ -193,7 +193,7 @@ class SavedModelTf1(PublicModelInterface):
     sess = tf.compat.v1.Session()
 
     def __init__(self,model_path,model_inputs=None):
-        self.model = tf.compat.v1.saved_model.loader.load(SavedModelTf1.sess, [tf.compat.v1.saved_model.tag_constants.SERVING], model_path)
+        self.model = tf.compat.v1.saved_model.loader.load(SavedModelTf1.sess, [tf.compat.v1.saved_model.tag_constants.SERVING], model_path)#tag值这里默认为SERVING，有不妥
         self.shape = model_inputs
         print("这是tf1版本的SavedModel模型，需要知道签名信息来还原图")
 

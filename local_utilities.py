@@ -1,3 +1,5 @@
+#@Author : wmingzhu
+#@Email : wangmingzhu@bonc.com.cn
 import json
 import os
 import tensorflow as tf
@@ -8,6 +10,37 @@ import numpy as np
 from PIL import Image
 import logging
 import io
+
+
+#从众多的ckpt组成文件中选择global_step最大的那个，即最新的那个
+def find_latest(parent_path:str)->str:
+    file_list = os.listdir(parent_path)
+    count = 0
+    max = 0
+    meta_file = ""
+    for file in file_list:
+        if file.endswith(".meta"):
+            count += 1
+
+    if count == 1:
+        for file in file_list:
+            if file.endswith(".meta"):
+                meta_file = parent_path + file if parent_path.endswith("/") else parent_path +"/" + file
+                break
+    else:
+        for file in file_list:
+            if file.endswith(".meta"):
+                number = int(os.path.splitext(file)[0][-1])
+                max = number if max < number else max
+
+        for file in file_list:
+            if file.endswith(".meta"):
+                if int(os.path.splitext(file)[0][-1]) == max:
+                    meta_file = parent_path + file if parent_path.endswith("/") else parent_path + "/" + file
+                    break
+
+    return meta_file
+
 #将图片转为numpy数组
 """
 PIL读出来的图片size应该是(width,height)，但是转成numpy矩阵后，变成了(height, width, channels)。所以resize的时候应该注意调换位置。numpy与tensorflow一致

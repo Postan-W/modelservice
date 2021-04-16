@@ -64,7 +64,6 @@ class Serving_Handler(RequestHandler):
         token = self.get_query_argument("token")
 
         logging.info(f'请求的token ===> {token}')
-        print("token为：",token)
         if not token:
             self.write(ExceptionEnum.NO_TOKEN.value)
             return
@@ -73,15 +72,23 @@ class Serving_Handler(RequestHandler):
         # 校验token
         token_ok = await self.check_token(token, predict_data)
         print("校验结果是:",token_ok)
+        logging.info(f'token校验结果为:{token_ok}')
         if not token_ok:
             self.write(ExceptionEnum.CHECK_TOKEN_ERROR.value)
             return
         logging.info(f'用户输入的数据的类型为 {type(predict_data)}')
         logging.info(f'用户输入的数据为 {predict_data}')
         try:
+            logging.info(f'pmml模型预测的数据类型为：{type(predict_data)}')
+            logging.info(f'pmml模型预测的数据为:{predict_data}')
             result_data = pmmlModel.predict(predict_data)
+            logging.info(f"预测的结果是:{result_data}")
+            logging.info(f'结果的类型是:{type(result_data)}')
+            result_data = dict(result_data)
+            logging.info(f'结果转换过的类型为:{result_data}')
+            logging.info("预测成功")
         except:
-            print("不是pmml模型的预测处理")
+            logging.info("不是pmml模型的处理")
             # 由于模型使用的字段，可能与用户输入不一致，故需要转换
             converted_src = self.convert_field(predict_data, DISPLAY, NAME)
             if not converted_src:
@@ -300,34 +307,35 @@ def init():
     # 下载模型
     download_model.download_model(download_model_zip_path, unzip_path)
     try:
-        # 如果模型路径下存在pmml文件，那么直接加载pmml模型.
+        #如果模型路径下存在pmml文件，那么直接加载pmml模型
         #pmml文件压缩包的结构是model/xxx.pmml文件
         #因为pmml文件结构的特殊性，所以解压函数要修改代码
         model_path_childs = os.listdir(local_model_path)
-        print("文件夹下的文件有:",model_path_childs)
+        logging.info(f'模型文件夹下的文件有:{model_path_childs}')
         for child in model_path_childs:
             if child.endswith(".pmml"):
                 full_path = os.path.join(local_model_path, child)
                 break
-        print("获取到的模型路径为:", full_path)
+
+        logging.info(f'获取到的模型路径是:{full_path}')
         print("模型大小是:",os.path.getsize(full_path))
         global pmmlModel
         pmmlModel = loadPmml.fromFile(full_path)
-        print("成功加载pmml模型")
+        logging.info(f'成功加载pmml模型')
     except:
-        print("不是加载pmml模型")
+        logging.info("从pmml模型的加载处理中跳出")
         # 获取模型路径
         get_model_path(local_model_path)
         # 加载模型
         try:
             global model
-            print("尝试加载PipelineModel")
+            logging.info("尝试加载PipelineModel")
             model = PipelineModel.load(local_model_path)#加载模型
         except:
             try:
             # H2O模型必须走这里
                 from pysparkling.ml import H2OMOJOSettings, H2OMOJOModel
-                print("从加载PipelineModel的try中跳出")
+                logging.info("从加载PipelineModel的try中跳出")
                 print("在except的try中尝试加载H2OMOJOModel")
                 settings = H2OMOJOSettings(withDetailedPredictionCol=True)
                 model = H2OMOJOModel.createFromMojo(local_model_path + '/mojo_model', settings)
@@ -357,7 +365,7 @@ if __name__ == '__main__':
     # 初始化工作
     init()
     api_addr = os.environ.get('API_ADDR')
-    print("传来的api_addr是:",api_addr)
+    logging.info(f'传来的api_addr是：{api_addr}')
     app = tornado.web.Application(
         [
             url(api_addr if api_addr.startswith("/") else "/" + api_addr, Serving_Handler),
