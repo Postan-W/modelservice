@@ -161,7 +161,7 @@ def h5_input_shape(model_json:str,logger)-> list:
     shape = pattern2.findall(result)
     shape = [int(element) for element in shape]
     return shape
-#复制上面的，名称区分一下，使用起来更方便
+#同上
 def savemodel_input_shape(model_json:str,logger)-> list:
     model_structure = json.loads(model_json)
     # 通过反向预查来匹配模型输入

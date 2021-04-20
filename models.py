@@ -199,10 +199,9 @@ class SavedModelTf1(PublicModelInterface):
 
     def predict(self, data=None):
         """
-        对下面try...except的解释:在我写这部分处理代码的时候前端还没有加上图的输入输出张量的填写框，这样的话，就没办法还原图来进行预测。
-        但是这里先加上这部分的处理逻辑，其中try的部分写的是通过前端传来的输入输出张量名称来获取张量并进行预测。
+        对下面try...except的解释:
+        try的部分写的是通过前端传来的输入输出张量名称来获取张量并进行预测。
         except部分写的是如果没有获得这个信息，那么就按照图灵引擎平台流上产生的模型所具有的固定signature来解析。
-        By wmingzhu
         """
         try:
             input_tensor = tf.compat.v1.get_default_graph().get_tensor_by_name(data["input_tensor_name"])
