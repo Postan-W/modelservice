@@ -204,8 +204,8 @@ class SavedModelTf1(PublicModelInterface):
         except部分写的是如果没有获得这个信息，那么就按照图灵引擎平台流上产生的模型所具有的固定signature来解析。
         """
         try:
-            input_tensor = tf.compat.v1.get_default_graph().get_tensor_by_name(data["input_tensor_name"])
-            output_tensor = tf.compat.v1.get_default_graph().get_tensor_by_name(data["output_tensor_name"])
+            input_tensor = tf.compat.v1.get_default_graph().get_tensor_by_name(data["inputTensor"])
+            output_tensor = tf.compat.v1.get_default_graph().get_tensor_by_name(data["outputTensor"])
             logging.info("传来的张量名称正确，已成功生成输入输出张量")
         except:
             logging.info("没有获得输入输出张量信息，只能按照固定格式解析")
@@ -266,8 +266,8 @@ class CkptModel(PublicModelInterface):
         self.graph = tf.compat.v1.get_default_graph()
         logging.info("成功还原当前图")
     def predict(self, data):
-        input_tensor = self.graph.get_tensor_by_name(data["input_tensor_name"])
-        output_tensor = self.graph.get_tensor_by_name(data["output_tensor_name"])
+        input_tensor = self.graph.get_tensor_by_name(data["inputTensor"])
+        output_tensor = self.graph.get_tensor_by_name(data["outputTensor"])
         logging.info("成功还原出输入输出张量")
         # 获取输入张量的形状
         input_shape = tuple(input_tensor.shape)
@@ -309,7 +309,7 @@ class PbModel(PublicModelInterface):
         self.graph_def.ParseFromString(f.read())#还原图
 
     def predict(self, data):
-        input_tensor,output_tensor = tf.compat.v1.import_graph_def(self.graph_def,return_elements=[data["input_tensor_name"],data["output_tensor_name"]],name="")
+        input_tensor,output_tensor = tf.compat.v1.import_graph_def(self.graph_def,return_elements=[data["inputTensor"],data["outputTensor"]],name="")
         logging.info("成功还原出输入输出张量")
         # 获取输入张量的形状
         input_shape = tuple(input_tensor.shape)

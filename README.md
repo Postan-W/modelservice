@@ -38,9 +38,14 @@
 
 - run.sh
 
-  定义了下载模型和启动服务
+  将传来的HOSTS环境变量写进hosts文件，定义了下载模型和启动服务
+
+  
 
   ```
+  string=$HOSTS
+  array=${string//,/ }
+  for var in ${array[@]} ;do echo ${var//<->/ } >> /etc/hosts ; done
   python /root/model_server/download_models.py
   #指定worker数、地址与端口、模块和flask对象、启动目录
   gunicorn -w 1 -b 0.0.0.0:5000 flask_service:app  --chdir /root/model_server/

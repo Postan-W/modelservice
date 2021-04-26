@@ -49,7 +49,8 @@ model = None
 pmmlModel = None
 pipeline_model = None
 model_json = None
-
+model_tag = 0 #模型加载后设定其类型，预测阶段就用这个类型的模型
+pmmlFields = None
 
 logging.basicConfig(format='%(asctime)s - %(levelname)s: %(message)s',
                     datefmt='%Y-%m-%d %H:%M:%S',
@@ -78,16 +79,21 @@ class Serving_Handler(RequestHandler):
             return
         logging.info(f'用户输入的数据的类型为 {type(predict_data)}')
         logging.info(f'用户输入的数据为 {predict_data}')
-        try:
+        if model_tag == 1:
             logging.info(f'pmml模型预测的数据类型为：{type(predict_data)}')
             logging.info(f'pmml模型预测的数据为:{predict_data}')
-            result_data = pmmlModel.predict(predict_data)
-            logging.info(f"预测的结果是:{result_data}")
-            logging.info(f'结果的类型是:{type(result_data)}')
-            result_data = dict(result_data)
-            logging.info(f'结果转换过的类型为:{result_data}')
-            logging.info("预测成功")
-        except:
+            try:
+                result_data = pmmlModel.predict(predict_data)
+                logging.info(f"预测的结果是:{result_data}")
+                logging.info(f'结果的类型是:{type(result_data)}')
+                result_data = dict(result_data)
+                logging.info(f'结果转换过的类型为:{result_data}')
+                logging.info("预测成功")
+            except:
+                logging.info("输入字段不符合模型要求")
+                result_data = {"输入的字段不符合要求，正确的字段是":pmmlFields}
+
+        else:
             logging.info("不是pmml模型的处理")
             # 由于模型使用的字段，可能与用户输入不一致，故需要转换
             converted_src = self.convert_field(predict_data, DISPLAY, NAME)
@@ -302,8 +308,25 @@ def get_jsonfile_fullname():
         if os.path.splitext(i)[1] == ".json": # 筛选json文件
             return os.path.join(path, i)
 
+import xml.dom.minidom as xmldom
+#获取pmml模型字段
+def parse_xml(path):
+    xml_tree = xmldom.parse(path)
+    nodes = xml_tree.documentElement
+    datafield_list = nodes.getElementsByTagName("DataField")
+    datafield_info = []
+    for datafield in datafield_list:
+        try:
+            datafield_info.append((datafield.getAttribute("name"), datafield.getAttribute("dataType")))
+        except Exception as e:
+            datafield_info = "请输入正确的字段"
+            logging.info(e)
+            return datafield_info
+    return datafield_info
 
 def init():
+    global model_tag
+    global pmmlFields
     # 下载模型
     download_model.download_model(download_model_zip_path, unzip_path)
     try:
@@ -321,7 +344,9 @@ def init():
         print("模型大小是:",os.path.getsize(full_path))
         global pmmlModel
         pmmlModel = loadPmml.fromFile(full_path)
+        pmmlFields = parse_xml(full_path)
         logging.info(f'成功加载pmml模型')
+        model_tag = 1
     except:
         logging.info("从pmml模型的加载处理中跳出")
         # 获取模型路径
@@ -331,6 +356,7 @@ def init():
             global model
             logging.info("尝试加载PipelineModel")
             model = PipelineModel.load(local_model_path)#加载模型
+            model_tag = 2
         except:
             try:
             # H2O模型必须走这里
@@ -339,6 +365,7 @@ def init():
                 print("在except的try中尝试加载H2OMOJOModel")
                 settings = H2OMOJOSettings(withDetailedPredictionCol=True)
                 model = H2OMOJOModel.createFromMojo(local_model_path + '/mojo_model', settings)
+                model_tag = 3
             except:
                 global pipeline_model
                 print("从加载H2OMOJOModel的try中跳出")
@@ -352,6 +379,7 @@ def init():
                     logging.error('XGB需要的pipelinemodel没有加载成功')
                     logging.error(pipeline_model)
 
+                model_tag = 4
         global final_transform_json_path
         final_transform_json_path = get_jsonfile_fullname()
 
