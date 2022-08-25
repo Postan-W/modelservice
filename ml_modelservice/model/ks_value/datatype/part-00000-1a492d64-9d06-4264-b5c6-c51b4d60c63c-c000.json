@@ -1,0 +1,1 @@
+{"dataSetId":"ks_value","fieldDefs":[{"typeClassName":"java.math.BigDecimal","ord":"0","code":"max(abs((tpr - fpr)))","sparkType":"double","displayName":"max(abs((tpr - fpr)))","name":"max(abs((tpr - fpr)))"}],"previewFlag":"false"}

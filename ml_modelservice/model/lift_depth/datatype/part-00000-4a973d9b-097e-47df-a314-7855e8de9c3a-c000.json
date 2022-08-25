@@ -1,0 +1,1 @@
+{"dataSetId":"lift_depth","fieldDefs":[{"typeClassName":"java.math.BigDecimal","ord":"0","code":"lift","sparkType":"double","displayName":"lift","name":"lift"},{"typeClassName":"java.math.BigDecimal","ord":"1","code":"depth","sparkType":"double","displayName":"depth","name":"depth"}],"previewFlag":"false"}

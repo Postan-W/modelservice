@@ -1,0 +1,1 @@
+{"dataSetId":"roc","fieldDefs":[{"typeClassName":"java.math.BigDecimal","ord":"0","code":"fpr","sparkType":"double","displayName":"fpr","name":"fpr"},{"typeClassName":"java.math.BigDecimal","ord":"1","code":"tpr","sparkType":"double","displayName":"tpr","name":"tpr"}],"previewFlag":"false"}

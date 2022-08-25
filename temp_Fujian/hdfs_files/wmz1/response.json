@@ -1,0 +1,53 @@
+{
+        "code": 1000,
+        "data": {
+            "content": [
+                {
+                    "appIcon": "https://pp.myapp.com/ma_icon/0/icon_53387113_1591842234/96",
+                    "appName": "超强清理大师极速版",
+                    "brandIcon": "https://pp.myapp.com/ma_icon/0/icon_52853839_1553067068/96",
+                    "brandName": "手机管家Pro",
+                    "channel": {
+                        "category": "自有流量平台",
+                        "icon": "https://static-ag.ymcdn.cn/channel/03188691.png",
+                        "id": 102,
+                        "name": "腾讯广告"
+                    },
+                    "duration": 30,
+                    "finalLink": "https://www.baidu.com/",
+                    "firstTime": 1592409600000,
+                    "formats": [
+                        {
+                            "id": 101,
+                            "name": "文字链"
+                        }
+                    ],
+                    "heat": 99,
+                    "id": 1,
+                    "impression": 6666,
+                    "industry": {
+                        "id": 106,
+                        "name": "软件应用",
+                        "parentId": 0
+                    },
+                    "lastTime": 1592409600000,
+                    "mtype": 101,
+                    "materials": [
+                        {
+                            "height": 720,
+                            "poster": "",
+                            "size": 63089,
+                            "type": "jpeg",
+                            "url": "//creative-static-ag.ymcdn.cn/jpeg/ae/c0/fa/aec0fa42e18e8db5d9c056798831b87e.jpeg",
+                            "width": 1280
+                        }
+                    ],
+                    "platform": "iOS",
+                    "redirect": "重定向链接",
+                    "slogan": "精彩"
+                }
+            ],
+            "total": 1
+        },
+        "msg": "success"
+}

@@ -1,0 +1,96 @@
+trainResult
+"DecisionTreeRegressionModel (uid=DecisionTreeRegressor_8665138ae2fc) of depth 5 with 63 nodes
+  If (c_MEAN <= 5.25)
+   If (c_MEAN <= 2.3165)
+    If (c_MEAN <= 1.0835)
+     If (c_MEAN <= 0.4165)
+      If (c_MEAN <= 0.21650000000000003)
+       Predict: 2.1451612903225805
+      Else (c_MEAN > 0.21650000000000003)
+       Predict: 7.4
+     Else (c_MEAN > 0.4165)
+      If (c_MEAN <= 0.8165)
+       Predict: 14.0
+      Else (c_MEAN > 0.8165)
+       Predict: 20.533333333333335
+    Else (c_MEAN > 1.0835)
+     If (c_MEAN <= 1.6835)
+      If (c_MEAN <= 1.4500000000000002)
+       Predict: 27.727272727272727
+      Else (c_MEAN > 1.4500000000000002)
+       Predict: 33.787234042553195
+     Else (c_MEAN > 1.6835)
+      If (c_CV <= 1.2685)
+       Predict: 44.18556701030928
+      Else (c_CV > 1.2685)
+       Predict: 36.41463414634146
+   Else (c_MEAN > 2.3165)
+    If (c_MEAN <= 3.8165)
+     If (c_MEAN <= 2.7835)
+      If (c_MEAN <= 2.55)
+       Predict: 49.84444444444444
+      Else (c_MEAN > 2.55)
+       Predict: 56.475
+     Else (c_MEAN > 2.7835)
+      If (c_MEAN <= 3.1165000000000003)
+       Predict: 64.14583333333333
+      Else (c_MEAN > 3.1165000000000003)
+       Predict: 72.35555555555555
+    Else (c_MEAN > 3.8165)
+     If (c_MEAN <= 4.15)
+      If (c_ZERO <= 16.5)
+       Predict: 81.9090909090909
+      Else (c_ZERO > 16.5)
+       Predict: 46.5
+     Else (c_MEAN > 4.15)
+      If (c_MEAN <= 4.949999999999999)
+       Predict: 91.57608695652173
+      Else (c_MEAN > 4.949999999999999)
+       Predict: 100.56818181818181
+  Else (c_MEAN > 5.25)
+   If (c_MEAN <= 8.683499999999999)
+    If (c_MEAN <= 6.75)
+     If (c_MEAN <= 5.7165)
+      If (c_CV <= 0.7355)
+       Predict: 109.63414634146342
+      Else (c_CV > 0.7355)
+       Predict: 131.33333333333334
+     Else (c_MEAN > 5.7165)
+      If (c_CV <= 0.481)
+       Predict: 116.0
+      Else (c_CV > 0.481)
+       Predict: 126.31343283582089
+    Else (c_MEAN > 6.75)
+     If (c_MEAN <= 8.0835)
+      If (c_INC <= 0.6695)
+       Predict: 170.69230769230768
+      Else (c_INC > 0.6695)
+       Predict: 148.02597402597402
+     Else (c_MEAN > 8.0835)
+      If (c_ZERO <= 1.5)
+       Predict: 169.3783783783784
+      Else (c_ZERO > 1.5)
+       Predict: 202.42857142857142
+   Else (c_MEAN > 8.683499999999999)
+    If (c_MEAN <= 10.25)
+     If (c_MEAN <= 9.4835)
+      If (c_CV <= 0.3775)
+       Predict: 196.74358974358975
+      Else (c_CV > 0.3775)
+       Predict: 234.71428571428572
+     Else (c_MEAN > 9.4835)
+      If (c_CV <= 0.224)
+       Predict: 222.7058823529412
+      Else (c_CV > 0.224)
+       Predict: 255.2
+    Else (c_MEAN > 10.25)
+     If (c_INC <= 1.0015)
+      If (c_INC <= 0.9975)
+       Predict: 276.125
+      Else (c_INC > 0.9975)
+       Predict: 211.5
+     Else (c_INC > 1.0015)
+      If (c_INC <= 1.0995)
+       Predict: 285.6296296296296
+      Else (c_INC > 1.0995)
+       Predict: 232.0"
