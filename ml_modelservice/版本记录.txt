@@ -1,3 +1,5 @@
-harbor中v7.4(和v10一样)是最新的，即支持了最多的模型类型；
 https://10.130.7.6:8443
 admin/Harbor12345
+1.x86环境spark2.4
+harbor中harbor.stress.com:8443/library/ml-model-service:spark2.4_x86是最新的，即支持了最多的模型类型；
+2.x86环境spark3.1

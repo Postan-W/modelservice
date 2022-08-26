@@ -1,0 +1,12 @@
+FROM harbor.stress.com:8443/library/ml-model-service:spark2.4_x86
+#卸载原有的2.4版本的h2o-pysparking,安装3.1的
+RUN pip uninstall h2o-pysparkling-2.4 -y && pip install h2o-pysparkling-3.1
+#卸载原有的pyspark安装3.1的pyspark
+RUN pip uninstall pyspark -y && pip install pyspark==3.1.1
+#删除原来的xgb的jar包，把3.1的xgb的jar包放到指定位置
+RUN rm -rf /usr/local/lib/python3.7/site-packages/pyspark/jars/xgboost4j-0.90.jar
+RUN rm -rf /usr/local/lib/python3.7/site-packages/pyspark/jars/xgboost4j-spark-0.90.jar
+COPY 3.1arm/x86的xgb的jar包 /usr/local/lib/python3.7/site-packages/pyspark/jars/
+COPY 3.1arm/x86的xgb的jar包 /usr/local/lib/python3.7/site-packages/pyspark/jars/
+#用XGBoost_classification.py替换2.4的，因为from pyspark.ml.util import JavaPredictionModel会报错
+COPY XGBoost_classification.py /root/machine_learning/
